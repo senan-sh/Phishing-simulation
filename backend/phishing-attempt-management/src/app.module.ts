@@ -5,7 +5,10 @@ import { AttemptsModule } from './attempts/attempts.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
     AuthModule,
     AttemptsModule,
   ],

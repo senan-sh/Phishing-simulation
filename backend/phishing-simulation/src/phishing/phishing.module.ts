@@ -1,9 +1,19 @@
 import { Module } from '@nestjs/common';
-import { PhishingService } from './phishing.service';
-import { PhishingController } from './phishing.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { PhishingSimulationController } from './phishing.controller';
+import { SimulationService } from './phishing.service';
+import {
+  PhishingAttempt,
+  PhishingAttemptSchema,
+} from '@shared/schemas/phishing-attempts.schema';
 
 @Module({
-  providers: [PhishingService],
-  controllers: [PhishingController],
+  imports: [
+    MongooseModule.forFeature([
+      { name: PhishingAttempt.name, schema: PhishingAttemptSchema },
+    ]),
+  ],
+  controllers: [PhishingSimulationController],
+  providers: [SimulationService],
 })
-export class PhishingModule {}
+export class PhishingSimulationModule {}
