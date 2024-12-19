@@ -1,11 +1,11 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 interface ProtectedRouteProps {
-  isAuthenticated: boolean;
+  element: React.ReactNode;
 }
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ isAuthenticated }) => {
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+const isAuthenticated = false;
+const ProtectedRoute = (props: ProtectedRouteProps) => {
+  return isAuthenticated ? props.element : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

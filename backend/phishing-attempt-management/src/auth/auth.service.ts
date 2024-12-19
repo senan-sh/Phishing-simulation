@@ -9,6 +9,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  // TODO: Implement for client side also, i mean set cookie with header
   async signIn(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
     if (!user || user.password !== pass) {
