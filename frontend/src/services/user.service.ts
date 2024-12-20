@@ -1,4 +1,4 @@
-import { ApiRoutes } from "@/constants/ApiRoutes";
+import { ApiRoutes } from "@/constants/apiRoutes";
 import { httpClient } from "../configs/http-client";
 
 export const userService = {

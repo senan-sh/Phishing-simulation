@@ -1,8 +1,9 @@
-import { Button, Form, Input } from "antd";
-import { rules } from "./const";
 import useUserContext from "@/context/UserContext/useUserContext";
-import { useNavigate } from "react-router-dom";
 import { authService, LoginRequestBody } from "@/services/auth.service";
+import { userService } from "@/services/user.service";
+import { Button, Form, Input } from "antd";
+import { useNavigate } from "react-router-dom";
+import { rules } from "./const";
 
 export default function Login() {
   const [loginForm] = Form.useForm();
@@ -10,10 +11,12 @@ export default function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async (values: LoginRequestBody) => {
-    // await authService.login(values);
-    setUser({ name: "Test user", username: "username" });
+    await authService.login(values);
+    const user = await userService.getUserDetails();
+    setUser(user);
     navigate("/");
   };
+
   return (
     <Form form={loginForm} onFinish={handleLogin} layout="vertical">
       <Form.Item name="username" rules={rules.username}>

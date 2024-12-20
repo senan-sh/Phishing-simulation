@@ -1,11 +1,11 @@
-import { ButtonProps, Form, Input, Modal } from "antd";
-import "./CreateSimulationDialog.scss";
+import { Form, Input, Modal } from "antd";
 import { Rule } from "antd/es/form";
 import { useEffect } from "react";
+import "./CreateSimulationDialog.scss";
 
 interface CreateSimulationDialogProps {
   open: boolean;
-  onSubmit: (data: unknown) => void;
+  onSubmit: (email: string) => void;
   onClose: () => void;
 }
 export default function CreateSimulationDialog(props: CreateSimulationDialogProps) {
@@ -20,7 +20,7 @@ export default function CreateSimulationDialog(props: CreateSimulationDialogProp
     form
       .validateFields()
       .then((values) => {
-        onSubmit(values);
+        onSubmit(values.email);
       })
       .catch(() => {});
   };
@@ -33,7 +33,7 @@ export default function CreateSimulationDialog(props: CreateSimulationDialogProp
       open={open}
       onOk={onOk}
       onCancel={onClose}
-      okText="Create attempt"
+      okText="Create trigger"
       cancelText="Cancel"
     >
       <Form layout="vertical" form={form}>

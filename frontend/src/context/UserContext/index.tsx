@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { notImplementedYet } from "../../errors/notImplementedYet";
 import { Nullable } from "../../types/nullable";
+import { User } from "@/types/user";
 
 interface TUserContext {
-  user: unknown;
-  setUser: (user: unknown) => void;
+  user: Nullable<User>;
+  setUser: (user: Nullable<User>) => void;
 }
 
 const initialUserContext: TUserContext = {
@@ -18,7 +19,7 @@ interface UserProviderProps {
   children: React.ReactElement;
 }
 export const UserProvider = (props: UserProviderProps) => {
-  const [user, setUser] = useState<Nullable<unknown>>(null);
+  const [user, setUser] = useState<Nullable<User>>(null);
 
   return (
     <UserContext.Provider

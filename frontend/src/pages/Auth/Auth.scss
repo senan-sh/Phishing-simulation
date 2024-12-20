@@ -7,6 +7,7 @@
   background-color: var(--color-auth-bg);
   gap: 2rem;
   color: white;
+  padding-top: 1rem;
 
   h1 {
     font-size: 1.5rem;
@@ -14,10 +15,15 @@
   }
 
   .auth-box {
+    margin-bottom: 1rem;
     background-color: white;
     border-radius: 2rem;
     padding: 2rem;
     animation: fadeInAndScale 200ms ease-in-out;
+
+    .ant-input-affix-wrapper {
+      padding: 0 0.5rem 0 0;
+    }
 
     form {
       width: 30rem;

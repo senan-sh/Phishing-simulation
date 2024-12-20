@@ -1,14 +1,16 @@
+import { PhishingAttempt } from "@/services/phishing-attempts.service";
 import { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
 
 enum Columns {
   Index = "no",
-  RecipientEmail = "recipientEmail",
+  RecipientEmail = "email",
   EmailContent = "emailContent",
-  CreateDate = "createdDate",
+  CreateDate = "createdAt",
   Status = "status",
 }
 
-export const columns: ColumnsType<unknown> = [
+export const columns: ColumnsType<PhishingAttempt> = [
   {
     key: Columns.Index,
     title: "No",
@@ -36,6 +38,7 @@ export const columns: ColumnsType<unknown> = [
     dataIndex: Columns.CreateDate,
     width: 80,
     align: "center",
+    render: (val) => dayjs(val.createdAt).format("DD.MM.YYYY HH:mm"),
   },
   {
     key: Columns.Status,
@@ -43,5 +46,8 @@ export const columns: ColumnsType<unknown> = [
     dataIndex: Columns.Status,
     width: 80,
     align: "center",
+    render: (val) => {
+      return <div className={val.toLowerCase() + " status-chip"}>{val}</div>;
+    },
   },
 ];

@@ -7,17 +7,17 @@ export default function useUserLoader() {
   const { setUser, user } = useUserContext();
 
   useEffect(() => {
-    // (async () => {
-    //   try {
-    //     setLoading(true);
-    //     const userDetails = await userService.getUserDetails();
-    //     setUser(userDetails);
-    //   } catch {
-    //     setUser(null);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // })();
+    (async () => {
+      try {
+        setLoading(true);
+        const userDetails = await userService.getUserDetails();
+        setUser(userDetails);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [setUser]);
 
   return { loading, user };

@@ -32,3 +32,32 @@ export const rules: Record<string, Rule[]> = {
     }),
   ],
 };
+
+export const registrationFormItems = [
+  { name: "email", rules: rules.email, placeholder: "Email", autoComplete: "off" },
+  { name: "name", rules: rules.name, placeholder: "Name", autoComplete: "off" },
+  { name: "surname", rules: rules.surname, placeholder: "Surname", autoComplete: "off" },
+  {
+    name: "password",
+    rules: rules.password,
+    placeholder: "Password",
+    autoComplete: "new-password",
+    isPassword: true,
+  },
+  {
+    name: "confirmPassword",
+    rules: rules.confirmPassword,
+    placeholder: "Confirm Password",
+    autoComplete: "new-password",
+    isPassword: true,
+    dependencies: ["password"],
+  },
+];
+
+export interface RegistrationValues {
+  email: string;
+  name: string;
+  surname: string;
+  password: string;
+  confirmPassword: string;
+}

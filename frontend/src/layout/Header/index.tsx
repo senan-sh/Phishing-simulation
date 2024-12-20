@@ -43,12 +43,17 @@ export default function AppHeader() {
     };
   }, [handleLogout, menuItems]);
 
+  if (user == null) {
+    return null;
+  }
   return (
     <Header className="app-header">
       <div className="logo">Phishing Simulation</div>
       <Dropdown menu={menu} trigger={["click"]} placement="bottomRight">
         <div className="avatar">
-          <span>{user.name}</span>
+          <span>
+            {user.name} {user.surname}
+          </span>
           <Avatar icon={<UserOutlined />} />
         </div>
       </Dropdown>

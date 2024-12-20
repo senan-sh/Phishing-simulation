@@ -1,15 +1,15 @@
 import { Toaster } from "react-hot-toast";
 import { Outlet } from "react-router-dom";
-// import useUserLoader from "./hooks/api/useUserLoader";
-// import PageLoader from "./components/PageLoader";
+import useUserLoader from "./hooks/api/useUserLoader";
+import PageLoader from "./components/PageLoader";
 import Layout from "./layout";
 
 export default function App() {
-  // const { loading } = useUserLoader();
+  const { loading } = useUserLoader();
 
-  // if (loading) {
-  //   return <PageLoader title="Please wait..." />;
-  // }
+  if (loading) {
+    return <PageLoader title="Please wait..." />;
+  }
 
   return (
     <>

@@ -1,16 +1,21 @@
-import axios, { AxiosError, HttpStatusCode } from "axios";
+import axios, { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 export const httpClient = axios.create({
-  baseURL: import.meta.env.BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
+  withCredentials: true,
 });
 
 httpClient.interceptors.response.use(
   (r) => r,
   (error) => {
+    let message: string;
     if (error instanceof AxiosError) {
-      if (error.status === HttpStatusCode.Unauthorized) {
-        // TODO: Implement refresh token
-      }
+      message = error.message;
+    } else {
+      message = error.toString();
     }
+    toast.error(message);
+    return Promise.reject(error);
   }
 );
