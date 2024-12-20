@@ -1,17 +1,42 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('register')
-  async register(@Body() body: { email: string; password: string }) {
-    return this.authService.register(body.email, body.password);
+  @Post('login')
+  async login(
+    @Body() body: { email: string; password: string },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken } = await this.authService.signIn(
+      body.email,
+      body.password,
+    );
+
+    res.cookie('Authorization', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000,
+      path: '/',
+    });
+
+    return { message: 'Login successful' };
   }
 
-  @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
-    return this.authService.login(body.email, body.password);
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    res.cookie('Authorization', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      expires: new Date(0),
+      path: '/',
+    });
+
+    return { message: 'Logout successful' };
   }
 }

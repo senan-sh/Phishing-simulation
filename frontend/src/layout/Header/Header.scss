@@ -1,0 +1,25 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  border-bottom: 1px solid #eee;
+  background-color: white;
+
+  .logo {
+    margin-right: auto;
+    font-size: 1.25rem;
+    font-weight: bold;
+  }
+
+  .avatar {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.logout-dropdown-item {
+  display: flex;
+  gap: 0.5rem;
+}

@@ -1,0 +1,55 @@
+.auth-page {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--color-auth-bg);
+  gap: 2rem;
+  color: white;
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .auth-box {
+    background-color: white;
+    border-radius: 2rem;
+    padding: 2rem;
+    animation: fadeInAndScale 200ms ease-in-out;
+
+    form {
+      width: 30rem;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      input.ant-input {
+        font-size: 1rem;
+        padding: 0.5rem;
+      }
+
+      button {
+        padding: 1.25rem;
+
+        span {
+          font-size: 1.25rem;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeInAndScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

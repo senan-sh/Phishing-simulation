@@ -1,25 +1,20 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import App from "../App";
-import PhishingAttempts from "../pages/PhishingAttempts";
+import PhishingSimulation from "../pages/PhishingSimulation";
 import ProtectedRoute from "../components/ProtectedRoute";
-import Login from "../pages/Login";
-import Registration from "../pages/Registration";
+import Auth from "@/pages/Auth";
 
 const unauthorizedRoutes: RouteObject[] = [
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/registration",
-    element: <Registration />,
+    path: "/auth",
+    element: <Auth />,
   },
 ];
 
 const authRoutes: RouteObject[] = [
   {
     path: "/phishing-attempts",
-    element: <PhishingAttempts />,
+    element: <PhishingSimulation />,
   },
 ].map((a) => {
   return {

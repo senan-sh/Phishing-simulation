@@ -1,0 +1,22 @@
+.attemt-creation-dialog {
+  .ant-modal-title {
+    text-align: center;
+  }
+  .ant-modal-body {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    label {
+      font-weight: 500;
+    }
+  }
+
+  .ant-modal-footer {
+    margin-top: 1rem;
+    display: flex;
+    > button {
+      width: 0;
+      flex-grow: 1;
+      padding: 1.25rem;
+    }
+  }
+}

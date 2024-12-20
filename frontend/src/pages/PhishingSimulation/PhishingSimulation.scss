@@ -1,0 +1,11 @@
+.phishing-simulation-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

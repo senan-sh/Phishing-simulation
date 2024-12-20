@@ -1,9 +1,7 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '@shared/auth/jwt-auth.guard';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AttemptsService } from './attempts.service';
 
 @Controller('phishing-attempts')
-@UseGuards(JwtAuthGuard)
 export class AttemptsController {
   constructor(private attemptsService: AttemptsService) {}
 
