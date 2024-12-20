@@ -1,5 +1,3 @@
-// src/auth/auth.middleware.ts
-
 import {
   Injectable,
   NestMiddleware,
@@ -9,11 +7,17 @@ import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 
+interface RequestWithLocal extends Request {
+  local?: {
+    user?: any;
+  };
+}
+
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(private configService: ConfigService) {}
 
-  use(req: Request, res: Response, next: NextFunction) {
+  use(req: RequestWithLocal, res: Response, next: NextFunction) {
     const token = req.cookies['Authorization'];
 
     if (!token) {
@@ -25,7 +29,7 @@ export class AuthMiddleware implements NestMiddleware {
         this.configService.get<string>('JWT_SECRET') || 'your_jwt_secret_key';
       const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
 
-      req.local = {
+      req.local.user = {
         userId: decoded.sub,
         username: decoded.username,
       };

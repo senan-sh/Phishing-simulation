@@ -5,11 +5,16 @@ import { Model } from 'mongoose';
 import {
   PhishingAttempt,
   PhishingAttemptDocument,
-} from './schemas/phishing-attempt.schema';
+} from '@shared/schemas/phishing-attempts.schema';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import Mail from 'nodemailer/lib/mailer';
 
 @Injectable()
 export class SimulationService {
-  private transporter;
+  private transporter: nodemailer.Transporter<
+    SMTPTransport.SentMessageInfo,
+    SMTPTransport.Options
+  >;
 
   constructor(
     @InjectModel(PhishingAttempt.name)
@@ -30,29 +35,33 @@ export class SimulationService {
     });
   }
 
+  private generateLink(attemptId: string): string {
+    return `${process.env.API_ATTEMPT_MANAGEMENT}/phishing/clicked?attemptId=${attemptId}`;
+  }
+
+  private generateMailOptions(email: string, link: string): Mail.Options {
+    return {
+      from: '"Phishing Simulation" <your_email@example.com>',
+      to: email,
+      subject: 'Phishing Test',
+      html: `
+          <p>This is a phishing simulation email.</p>
+          <p>Click <a href="${link}" target="_blank">here</a> to test your awareness.</p>
+        `,
+    };
+  }
+
   async sendPhishingEmail(
     email: string,
     attemptId: string,
   ): Promise<{ message: string }> {
     try {
-      const link = `http://localhost:3000/phishing/clicked?attemptId=${attemptId}`;
-
-      const mailOptions = {
-        from: '"Phishing Simulation" <your_email@example.com>',
-        to: email,
-        subject: 'Phishing Test',
-        html: `
-          <p>This is a phishing simulation email.</p>
-          <p>Click <a href="${link}" target="_blank">here</a> to test your awareness.</p>
-        `,
-      };
-
+      const link = this.generateLink(attemptId);
+      const mailOptions = this.generateMailOptions(email, link);
       await this.transporter.sendMail(mailOptions);
-
       await this.phishingAttemptModel.findByIdAndUpdate(attemptId, {
         status: 'SENT',
       });
-
       return { message: 'Phishing email sent successfully' };
     } catch (e) {
       console.log(e);

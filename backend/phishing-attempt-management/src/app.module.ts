@@ -3,6 +3,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { AttemptsModule } from './attempts/attempts.module';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     AuthModule,
     AttemptsModule,
   ],

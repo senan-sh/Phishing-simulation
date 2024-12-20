@@ -1,10 +1,14 @@
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
+import { CookieService } from './cookie.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private cookieService: CookieService,
+  ) {}
 
   @Post('login')
   async login(
@@ -15,28 +19,13 @@ export class AuthController {
       body.email,
       body.password,
     );
-
-    res.cookie('Authorization', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 1000,
-      path: '/',
-    });
-
+    this.cookieService.setAuthCookie(res, accessToken);
     return { message: 'Login successful' };
   }
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.cookie('Authorization', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      expires: new Date(0),
-      path: '/',
-    });
-
+    this.cookieService.clearAuthCookie(res);
     return { message: 'Logout successful' };
   }
 }
