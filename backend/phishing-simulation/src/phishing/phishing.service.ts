@@ -63,8 +63,7 @@ export class SimulationService {
         status: 'SENT',
       });
       return { message: 'Phishing email sent successfully' };
-    } catch (e) {
-      console.log(e);
+    } catch {
       throw new HttpException(
         'Failed to send phishing email',
         HttpStatus.INTERNAL_SERVER_ERROR,

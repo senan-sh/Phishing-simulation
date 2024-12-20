@@ -3,25 +3,24 @@ import {
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { NextFunction, Response } from 'express';
+import * as jwt from 'jsonwebtoken';
+import { Request } from 'express';
 
-interface RequestWithLocal extends Request {
-  local?: {
-    user?: any;
-  };
+export interface RequestWithUser extends Request {
+  user?: any;
 }
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   constructor(private configService: ConfigService) {}
 
-  use(req: RequestWithLocal, res: Response, next: NextFunction) {
-    const token = req.cookies['Authorization'];
+  use(req: RequestWithUser, res: Response, next: NextFunction) {
+    const token = req.cookies['accessToken'];
 
     if (!token) {
-      return next();
+      throw new UnauthorizedException('Access denied');
     }
 
     try {
@@ -29,8 +28,8 @@ export class AuthMiddleware implements NestMiddleware {
         this.configService.get<string>('JWT_SECRET') || 'your_jwt_secret_key';
       const decoded = jwt.verify(token, secret) as jwt.JwtPayload;
 
-      req.local.user = {
-        userId: decoded.sub,
+      req.user = {
+        userId: decoded.userId,
         username: decoded.username,
       };
 

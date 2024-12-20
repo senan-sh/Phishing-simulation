@@ -14,15 +14,19 @@
     margin: auto;
     border-radius: 0.25rem;
     padding: 0.25rem 0.5rem;
+    color: white;
+    text-transform: uppercase;
 
     &.pending {
       background-color: #1088f9;
-      color: white;
     }
     &.sent {
       background-color: #5cb338;
     }
     &.clicked {
+      background-color: #4154fb;
+    }
+    &.failed {
       background-color: #fb4141;
     }
   }

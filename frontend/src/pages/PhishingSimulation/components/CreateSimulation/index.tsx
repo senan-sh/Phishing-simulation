@@ -5,7 +5,7 @@ import "./CreateSimulationDialog.scss";
 
 interface CreateSimulationDialogProps {
   open: boolean;
-  onSubmit: (email: string) => void;
+  onSubmit: (values: { emailContent: string; email: string }) => void;
   onClose: () => void;
 }
 export default function CreateSimulationDialog(props: CreateSimulationDialogProps) {
@@ -20,7 +20,7 @@ export default function CreateSimulationDialog(props: CreateSimulationDialogProp
     form
       .validateFields()
       .then((values) => {
-        onSubmit(values.email);
+        onSubmit(values);
       })
       .catch(() => {});
   };
@@ -37,14 +37,32 @@ export default function CreateSimulationDialog(props: CreateSimulationDialogProp
       cancelText="Cancel"
     >
       <Form layout="vertical" form={form}>
-        <Form.Item name="email" label="Client email" rules={formItemRules} validateTrigger="onBlur">
-          <Input />
+        <Form.Item
+          name="email"
+          label="Client email"
+          rules={formItemRules.email}
+          validateTrigger="onBlur"
+        >
+          <Input placeholder="user@example.com" />
+        </Form.Item>
+        <Form.Item
+          name="emailContent"
+          label="Email content"
+          rules={formItemRules.emailContent}
+          validateTrigger="onBlur"
+        >
+          <Input.TextArea
+            maxLength={1024}
+            placeholder="Phishing mail content, including link"
+            autoSize={{ minRows: 5, maxRows: 15 }}
+          />
         </Form.Item>
       </Form>
     </Modal>
   );
 }
 
-const formItemRules: Rule[] = [
-  { required: true, type: "email", message: "Please enter a valid email address" },
-];
+const formItemRules: Record<string, Rule[]> = {
+  email: [{ required: true, type: "email", message: "Please enter a valid email address" }],
+  emailContent: [{ required: true, type: "string", message: "Please enter a valid email content" }],
+};

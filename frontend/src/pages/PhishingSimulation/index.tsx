@@ -18,19 +18,28 @@ export default function PhishingSimulation() {
   const onClose = () => {
     setCreationDialogOpened(false);
   };
-  const onSubmit = (email: string) => {
-    phingAttemptsService.create(email);
+  const onSubmit = async (values: { emailContent: string; email: string }) => {
+    try {
+      await phingAttemptsService.create(values);
+    } finally {
+      fetchData();
+    }
+  };
+
+  const fetchData = async () => {
+    const responseData = await phingAttemptsService.getList(
+      paginationParams.page,
+      paginationParams.size
+    );
+    setTableData(responseData.data);
+    updatePaginationData({
+      totalElements: responseData.totalElements,
+      totalPages: responseData.totalPages,
+    });
   };
 
   useEffect(() => {
-    (async () => {
-      const responseData = await phingAttemptsService.getList();
-      setTableData(responseData.data);
-      updatePaginationData({
-        totalElements: responseData.totalElements,
-        totalPages: responseData.totalPages,
-      });
-    })();
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationParams.page, paginationParams.size]);
 

@@ -3,9 +3,13 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm install --production
+RUN npm install
 
-COPY . .
+COPY ./shared-backend ./shared-backend
+RUN cd ./shared && npm install
 
-EXPOSE 3001
-CMD ["npm", "run", "start:prod"]
+COPY ./backend1 .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

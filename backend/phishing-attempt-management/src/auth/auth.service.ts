@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -9,17 +10,19 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // TODO: Implement for client side also, i mean set cookie with header
   async signIn(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
-    if (!user || user.password !== pass) {
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const result = await bcrypt.compare(pass, user.password);
+    if (!result) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { username: user.email, name: user.name };
-
+    const payload = { username: user.email, name: user.name, userId: user._id };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }

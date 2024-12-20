@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   PhishingAttempt,
-  PhishingAttemptDocument,
+  PhishingAttemptStatus,
 } from '@shared/schemas/phishing-attempts.schema';
 import { Model } from 'mongoose';
 import { firstValueFrom } from 'rxjs';
@@ -12,40 +12,59 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class AttemptsService {
   constructor(
-    @InjectModel(PhishingAttempt.name)
     private httpService: HttpService,
     private jwtService: JwtService,
-    private phishingAttemptModel: Model<PhishingAttemptDocument>,
+    @InjectModel(PhishingAttempt.name)
+    private attemptModel: Model<PhishingAttempt>,
   ) {}
-
+  async findPaginated(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const [results, total] = await Promise.all([
+      this.attemptModel.find().skip(skip).limit(limit).exec(),
+      this.attemptModel.countDocuments().exec(),
+    ]);
+    const totalPages = Math.ceil(total / limit);
+    return {
+      data: results,
+      totalElements: total,
+      totalPages,
+    };
+  }
   async findAll() {
-    return this.phishingAttemptModel.find().exec();
+    return this.attemptModel.find().exec();
   }
 
-  private generateAccessToken() {
-    const defaultUser = { username: 'admin', name: 'Admin' };
+  private generateAccessToken(): string {
+    const defaultUser = { username: 'admin', name: 'Admin', id: '1' };
     return this.jwtService.sign(defaultUser);
   }
 
-  async createAndSend(email: string) {
+  async createAndSend(email: string, emailContent: string) {
+    const attempt = await this.attemptModel.create({
+      email,
+      emailContent,
+      status: PhishingAttemptStatus.Pending,
+      createdAt: new Date(),
+    });
     try {
-      const attempt = await this.phishingAttemptModel.create({
-        email,
-        status: 'PENDING',
-        createdAt: new Date(),
-      });
-
-      // TODO: Implement with observable
+      const accessToken = this.generateAccessToken();
       const { status } = await firstValueFrom(
-        this.httpService.post(process.env.SEND_EMAIL_URI),
+        this.httpService.post(process.env.SEND_EMAIL_URI, null, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }),
       );
 
-      await this.phishingAttemptModel.findByIdAndUpdate(attempt._id, {
-        status: 'SENT',
+      await this.attemptModel.findByIdAndUpdate(attempt._id, {
+        status: PhishingAttemptStatus.Sent,
       });
 
       return { message: 'Phishing email sent successfully', attempt };
     } catch {
+      await this.attemptModel.findByIdAndUpdate(attempt._id, {
+        status: PhishingAttemptStatus.Failed,
+      });
       throw new HttpException(
         'Failed to create and send phishing attempt',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -54,12 +73,16 @@ export class AttemptsService {
   }
 
   async updateStatus(id: string, status: string) {
-    const validStatuses = ['PENDING', 'SENT', 'CLICKED'];
-    if (!validStatuses.includes(status)) {
+    const validStatuses = [
+      PhishingAttemptStatus.Clicked,
+      PhishingAttemptStatus.Pending,
+      PhishingAttemptStatus.Sent,
+    ];
+    if (!validStatuses.includes(status as PhishingAttemptStatus)) {
       throw new HttpException('Invalid status', HttpStatus.BAD_REQUEST);
     }
 
-    const updatedAttempt = await this.phishingAttemptModel.findByIdAndUpdate(
+    const updatedAttempt = await this.attemptModel.findByIdAndUpdate(
       id,
       { status },
       { new: true },

@@ -2,14 +2,22 @@ import { ApiRoutes } from "@/constants/apiRoutes";
 import { httpClient } from "../configs/http-client";
 
 export const phingAttemptsService = {
-  getList: async () => {
-    return (await httpClient.get<PhishingAttemptList>(ApiRoutes.GetPhishingAttempts)).data;
+  getList: async (page: number, size: number) => {
+    return (
+      await httpClient.get<PhishingAttemptList>(ApiRoutes.GetPhishingAttempts, {
+        params: {
+          page,
+          size,
+        },
+      })
+    ).data;
   },
-  create: (email: string) => {
-    return httpClient.post(ApiRoutes.GetPhishingAttempts, { email });
+  create: (body: { email: string; emailContent: string }) => {
+    return httpClient.post(ApiRoutes.GetPhishingAttempts, body);
   },
 };
 export enum PhishingAttemptStatus {
+  Failed = "failed",
   Pending = "pending",
   Sent = "sent",
   Clicked = "clicked",
@@ -19,7 +27,7 @@ export interface PhishingAttempt {
   _id: string;
   email: string;
   status: PhishingAttemptStatus;
-  createdAt: string; // ISO date string
+  createdAt: string;
   __v: number;
   emailContent: string;
 }

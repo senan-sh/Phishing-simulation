@@ -1,9 +1,11 @@
+import { HttpModule } from '@nestjs/axios';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AttemptsModule } from './attempts/attempts.module';
 import { AuthMiddleware } from './auth/auth.middleware';
-import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -12,6 +14,8 @@ import { MongooseModule } from '@nestjs/mongoose';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    HttpModule,
+    UsersModule,
     AuthModule,
     AttemptsModule,
   ],
@@ -20,6 +24,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
+      .exclude('/auth/login', 'user/registration')
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
