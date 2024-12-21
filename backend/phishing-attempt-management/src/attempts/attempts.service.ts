@@ -49,11 +49,19 @@ export class AttemptsService {
     try {
       const accessToken = this.generateAccessToken();
       const { status } = await firstValueFrom(
-        this.httpService.post(process.env.SEND_EMAIL_URI, null, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
+        this.httpService.post(
+          process.env.SEND_EMAIL_URI,
+          {
+            email,
+            emailContent,
+            attemptId: attempt._id,
           },
-        }),
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          },
+        ),
       );
 
       await this.attemptModel.findByIdAndUpdate(attempt._id, {
@@ -61,7 +69,8 @@ export class AttemptsService {
       });
 
       return { message: 'Phishing email sent successfully', attempt };
-    } catch {
+    } catch (e) {
+      console.log(e);
       await this.attemptModel.findByIdAndUpdate(attempt._id, {
         status: PhishingAttemptStatus.Failed,
       });
@@ -76,6 +85,7 @@ export class AttemptsService {
     const validStatuses = [
       PhishingAttemptStatus.Clicked,
       PhishingAttemptStatus.Pending,
+      PhishingAttemptStatus.Failed,
       PhishingAttemptStatus.Sent,
     ];
     if (!validStatuses.includes(status as PhishingAttemptStatus)) {

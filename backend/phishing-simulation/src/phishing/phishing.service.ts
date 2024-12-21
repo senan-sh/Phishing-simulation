@@ -24,26 +24,40 @@ export class SimulationService {
   }
 
   private configureMailTransporter() {
+    // this.transporter = nodemailer.createTransport({
+    //   host: process.env.EMAIL_HOST,
+    //   port: parseInt(process.env.EMAIL_PORT),
+    //   secure: false,
+    //   auth: {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_USER_PASSWORD,
+    //   },
+    // });
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT),
+      host: 'smtp.gmail.com',
+      port: 587,
       secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_USER_PASSWORD,
+        user: '',
+        pass: '',
       },
     });
   }
 
   private generateLink(attemptId: string): string {
-    return `${process.env.API_ATTEMPT_MANAGEMENT}/phishing/clicked?attemptId=${attemptId}`;
+    return `${process.env.API_ATTEMPT_MANAGEMENT}/phishing-attempts/${attemptId}`;
   }
 
-  private generateMailOptions(email: string, link: string): Mail.Options {
+  private generateMailOptions(
+    email: string,
+    emailContent: string,
+    link: string,
+  ): Mail.Options {
     return {
-      from: '"Phishing Simulation" <your_email@example.com>',
-      to: email,
+      from: 'Sanan senan545@gmail.com',
+      to: 'senan200125@gmail.com',
       subject: 'Phishing Test',
+      text: emailContent,
       html: `
           <p>This is a phishing simulation email.</p>
           <p>Click <a href="${link}" target="_blank">here</a> to test your awareness.</p>
@@ -51,36 +65,29 @@ export class SimulationService {
     };
   }
 
-  async sendPhishingEmail(
-    email: string,
-    attemptId: string,
-  ): Promise<{ message: string }> {
+  async sendPhishingEmail(body: {
+    email: string;
+    emailContent: string;
+    attemptId: string;
+  }): Promise<{ message: string }> {
     try {
-      const link = this.generateLink(attemptId);
-      const mailOptions = this.generateMailOptions(email, link);
+      const link = this.generateLink(body.attemptId);
+      console.log({ link });
+      const mailOptions = this.generateMailOptions(
+        body.email,
+        body.emailContent,
+        link,
+      );
+      console.log({ mailOptions });
       await this.transporter.sendMail(mailOptions);
-      await this.phishingAttemptModel.findByIdAndUpdate(attemptId, {
+      await this.phishingAttemptModel.findByIdAndUpdate(body.attemptId, {
         status: 'SENT',
       });
       return { message: 'Phishing email sent successfully' };
-    } catch {
+    } catch (e) {
+      console.log(e);
       throw new HttpException(
         'Failed to send phishing email',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  async markClicked(attemptId: string): Promise<{ message: string }> {
-    try {
-      await this.phishingAttemptModel.findByIdAndUpdate(attemptId, {
-        status: 'CLICKED',
-      });
-
-      return { message: 'Phishing attempt marked as clicked' };
-    } catch {
-      throw new HttpException(
-        'Failed to update phishing attempt',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
